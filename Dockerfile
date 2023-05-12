@@ -138,6 +138,20 @@ COPY --from=buildstage /tmp/antlr3c-build/ /
 COPY --from=buildstage /tmp/libspotify-build/ /
 COPY root/ /
 
+# 安装pulseaudio及其蓝牙模块
+RUN \
+  echo "**** install pulseaudio packages ****" && \
+  apk add -U --update --no-cache \
+    pulseaudio \
+    pulseaudio-module-bluetooth
+
+# 配置pulseaudio
+RUN mkdir -p /root/.config/pulse && \
+    echo "default-server = unix:/run/pulse/native" > /root/.config/pulse/client.conf && \
+    echo "autospawn = no" >> /root/.config/pulse/client.conf && \
+    echo "daemon-binary = /bin/true" >> /root/.config/pulse/client.conf
+
+
 # ports and volumes
 EXPOSE 3689
 
